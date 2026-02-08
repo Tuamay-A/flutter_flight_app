@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../account/payment_methods_page.dart';
+import 'payment/payment_methods_page.dart';
 import '../account/profile_page.dart';
 import '../account/settings_page.dart';
 import '../home/auth/sign_in_page.dart';
