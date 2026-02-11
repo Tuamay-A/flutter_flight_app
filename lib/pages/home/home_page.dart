@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = const [
     StaysPage(),
     FlightsPage(),
-    CarsPage(),
+    CarPage(),
     PackagesPage(),
     ThingsToDoPage(),
   ];
@@ -40,6 +40,12 @@ class _HomePageState extends State<HomePage> {
               // Expanded(child: Text("Flight App")),
             ],
           ),
+        backgroundColor: const Color.fromRGBO(40, 247, 178, 1),
+        title: Row(
+          children: [
+            // Image.asset("assets/images/expedia_logo.png", height: 40),
+            Expanded(child: Text("Flight App")),
+          ],
         ),
         actions: [
           TextButton(
