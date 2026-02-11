@@ -21,6 +21,7 @@ class CarPage extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
               onPressed: () {
                 Get.to(() => CarSearchScreen());
               },
