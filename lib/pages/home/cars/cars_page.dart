@@ -1,4 +1,6 @@
+import 'package:expedia/pages/home/cars/car_search_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CarPage extends StatelessWidget {
   const CarPage({super.key});
@@ -18,7 +20,12 @@ class CarPage extends StatelessWidget {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: () {}, child: const Text('Search Cars')),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(() => CarSearchScreen());
+              },
+              child: const Text('Search Cars'),
+            ),
           ],
         ),
       ),

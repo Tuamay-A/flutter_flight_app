@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'navigation/bottom_nav.dart';
 import 'package:get/get.dart';
 import 'pages/account/controllers/setting_controller.dart';
-
+import '';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
