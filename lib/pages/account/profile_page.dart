@@ -106,7 +106,7 @@ class ProfilePage extends StatelessWidget {
 
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: controller.gender.value,
+                  initialValue: controller.gender.value,
                   decoration: const InputDecoration(
                     labelText: "Gender",
                     border: OutlineInputBorder(),

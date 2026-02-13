@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ExplorePage extends StatelessWidget {
-  const ExplorePage({Key? key}) : super(key: key);
+  const ExplorePage({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text("Explore"),
-      backgroundColor: Colors.white,
-    ),
+    appBar: AppBar(title: const Text("Explore"), backgroundColor: Colors.white),
     body: const Center(
-      child: Text("Explore destinations and interests here.", style: TextStyle(fontSize: 18)),
+      child: Text(
+        "Explore destinations and interests here.",
+        style: TextStyle(fontSize: 18),
+      ),
     ),
   );
 }
 
 class InboxPage extends StatefulWidget {
-  const InboxPage({Key? key}) : super(key: key);
+  const InboxPage({super.key});
 
   @override
   State<InboxPage> createState() => _InboxPageState();
@@ -24,67 +24,9 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
-  }
-
-  Widget _notificationTab() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
-      children: [
-        Icon(Icons.notifications_none, size: 84, color: Colors.blue.withOpacity(0.45)),
-        const SizedBox(height: 22),
-        const Text(
-          "No notifications yet",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 14),
-        const Text(
-          "You'll get alerts about your trips and account here. Ready to book your next trip?",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: Colors.black54),
-        ),
-        const SizedBox(height: 32),
-        SizedBox(
-          width: 220,
-          child: ElevatedButton(
-            onPressed: () => Get.to(() => const ExplorePage()),
-            style: ElevatedButton.styleFrom(
-              shape: const StadiumBorder(),
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(vertical: 13),
-            ),
-            child: const Text("Start exploring", style: TextStyle(fontSize: 16)),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _messagesTab() {
-    return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
-      children: [
-        Icon(Icons.chat_bubble_outline, size: 84, color: Colors.blue.withOpacity(0.45)),
-        const SizedBox(height: 26),
-        const Text(
-          "No messages yet",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 14),
-        const Text(
-          "Hotels and properties can message you here after you book a stay.",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 15, color: Colors.black54),
-        ),
-      ],
-    );
   }
 
   @override
@@ -129,9 +71,10 @@ class _InboxPageState extends State<InboxPage>
 
 // Tab Content Helper - stateless, always works
 enum TabContentType { notifications, messages }
+
 class _TabContent extends StatelessWidget {
   final TabContentType type;
-  const _TabContent({required this.type, Key? key}) : super(key: key);
+  const _TabContent({required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -139,11 +82,16 @@ class _TabContent extends StatelessWidget {
       return ListView(
         padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
         children: [
-          Icon(Icons.notifications_none, size: 84, color: Colors.blue.withOpacity(0.45)),
+          // ignore: deprecated_member_use
+          Icon(Icons.notifications_none, size: 84, color: Colors.blue),
           const SizedBox(height: 22),
           const Text(
             "No notifications yet",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 19,
+              color: Colors.black,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 14),
@@ -162,7 +110,10 @@ class _TabContent extends StatelessWidget {
                 backgroundColor: Colors.blue,
                 padding: const EdgeInsets.symmetric(vertical: 13),
               ),
-              child: const Text("Start exploring", style: TextStyle(fontSize: 16)),
+              child: const Text(
+                "Start exploring",
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ),
         ],
@@ -171,11 +122,16 @@ class _TabContent extends StatelessWidget {
       return ListView(
         padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
         children: [
-          Icon(Icons.chat_bubble_outline, size: 84, color: Colors.blue.withOpacity(0.45)),
+          // ignore: deprecated_member_use
+          Icon(Icons.chat_bubble_outline, size: 84, color: Colors.blue),
           const SizedBox(height: 26),
           const Text(
             "No messages yet",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 19, color: Colors.black),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 19,
+              color: Colors.black,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 14),
