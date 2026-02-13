@@ -1,19 +1,17 @@
+import 'package:expedia/pages/home/auth/auth_controller.dart';
 import 'package:flutter/material.dart';
-import 'navigation/bottom_nav.dart';
 import 'package:get/get.dart';
 import 'pages/account/controllers/setting_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final settingsController = Get.put(SettingsController());
-  settingsController.loadSettings();
-  runApp(const MyApp());
+  Get.put(AuthController());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+  MyApp({super.key});
+  final settingsController = Get.put(SettingsController());
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -21,7 +19,7 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      home: BottomNav(),
+      home: Scaffold(body: Center(child: CircularProgressIndicator())),
     );
   }
 }

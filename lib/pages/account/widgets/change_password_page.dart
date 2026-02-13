@@ -20,6 +20,7 @@ class ChangePasswordPage extends StatelessWidget {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 10.0),
             const TextField(
               obscureText: true,
               decoration: InputDecoration(
