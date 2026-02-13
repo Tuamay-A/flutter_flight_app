@@ -82,8 +82,8 @@ class AccountPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () {
-                  // Get.offAll(() => const SignInPage());
-                  Get.to(() => const SignInPage());
+                  Get.offAll(() => const SignInPage());
+                  // Get.to(() => const SignInPage());
                 },
                 child: const Text(
                   "Sign Out",
