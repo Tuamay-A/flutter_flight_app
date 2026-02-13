@@ -36,12 +36,12 @@ This project is mainly focused on frontend/UI development for now. API integrati
 
 ## 📸 Project Screenshots
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <div style="flex: 0 0 48%; box-sizing: border-box;">
-    <img width="100%" height="auto" alt="Screenshot 1" src="https://github.com/user-attachments/assets/cc9625cf-6b2f-4736-8c4a-a9c4ba2e8d3a" />
+<div style="display: flex; flex-wrap: wrap; gap: 20px;">
+  <div style="flex: 0 0 600px; box-sizing: border-box;">
+    <img width="600" height="1100" alt="Screenshot 1" src="https://github.com/user-attachments/assets/cc9625cf-6b2f-4736-8c4a-a9c4ba2e8d3a" />
   </div>
-  <div style="flex: 0 0 48%; box-sizing: border-box;">
-    <img width="100%" height="auto" alt="Screenshot 2" src="https://github.com/user-attachments/assets/
+  <div style="flex: 0 0 600px; box-sizing: border-box;">
+    <img width="600" height="1100" alt="Screenshot 2" src="https://github.com/user-attachments/assets
 
 
 
