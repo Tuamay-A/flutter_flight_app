@@ -4,7 +4,7 @@ import 'widgets/search_tile.dart';
 import './stays_search_page.dart';
 import '../home/cars/cars_page.dart';
 import '../home/package/packages_page.dart';
-import '../search/searchFlight/search_flight_page.dart';
+import 'search_flight_page.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({super.key});

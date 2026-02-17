@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FlightDateField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
-  final VoidCallback onTap;
 
   const FlightDateField({
     super.key,
     required this.label,
     required this.controller,
-    required this.onTap,
   });
 
   @override
@@ -19,15 +18,22 @@ class FlightDateField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         readOnly: true,
-        onTap: onTap,
-        validator: (v) =>
-            v!.isEmpty ? "Select $label" : null,
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime.now(),
+            lastDate: DateTime(2030),
+          );
+          if (picked != null) {
+            controller.text = DateFormat('EEE, MMM d').format(picked);
+          }
+        },
+        validator: (v) => v!.isEmpty ? "Select date" : null,
         decoration: InputDecoration(
-          prefixIcon: const Icon(Icons.date_range),
+          prefixIcon: const Icon(Icons.calendar_today, color: Colors.blue),
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

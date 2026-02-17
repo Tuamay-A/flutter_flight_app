@@ -108,7 +108,6 @@ class TripsPage extends StatelessWidget {
         toolbarHeight: 0, // Hide the standard AppBar
         elevation: 0,
       ),
-      backgroundColor: Colors.grey[50],
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
@@ -171,8 +170,7 @@ class TripsPage extends StatelessWidget {
                           color: Colors.grey[400],
                           image: const DecorationImage(
                             fit: BoxFit.cover,
-                            // Use a pattern background matching the image if you have
-                            image: AssetImage('assets/pattern.png'),
+                            image: AssetImage('assets/p2.jpg'),
                             opacity: 0.1,
                           ),
                         ),
@@ -242,7 +240,7 @@ class TripsPage extends StatelessWidget {
                   ),
                 ),
               ),
-              // Find Your Booking Card
+
               GestureDetector(
                 onTap: () => Get.to(() => FindYourBookingPage()),
                 child: Container(
@@ -305,7 +303,7 @@ class FindYourBookingPage extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(),
         title: const Text("Find your booking"),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 1,
       ),
       body: Padding(
@@ -333,21 +331,23 @@ class FindYourBookingPage extends StatelessWidget {
             const SizedBox(height: 10),
             TextButton(
               onPressed: () {}, // Add forgot logic if you want
-              child: const Text("Forgot your itinerary number?"),
+              child: const Text(
+                "Forgot your itinerary number?",
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-
-              },
+              onPressed: () {},
               style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
                 minimumSize: Size(double.infinity, 45),
               ),
               child: const Text("Continue"),
             ),
             const SizedBox(height: 24),
             GestureDetector(
-              onTap: () {}, // Implement alternate booking logic
+              onTap: () {},
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -368,7 +368,7 @@ class FindYourBookingPage extends StatelessWidget {
                     ),
                     Icon(
                       Icons.arrow_forward_ios,
-                      color: Colors.black54,
+                      color: Colors.transparent,
                       size: 18,
                     ),
                   ],

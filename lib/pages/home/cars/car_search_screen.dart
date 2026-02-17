@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class CarSearchScreen extends StatelessWidget {
   const CarSearchScreen({super.key});
 
@@ -9,13 +10,18 @@ class CarSearchScreen extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(24),
         children: [
-          Text('Car Rental Search', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          Text(
+            'Car Rental Search',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
           SizedBox(height: 16),
           TextField(
             decoration: InputDecoration(
               prefixIcon: Icon(Icons.place_outlined),
               hintText: 'Pick-up Location',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
           SizedBox(height: 16),
@@ -24,28 +30,36 @@ class CarSearchScreen extends StatelessWidget {
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.calendar_today),
-                      hintText: 'Pick-up Date',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                    prefixIcon: Icon(Icons.calendar_today),
+                    hintText: 'Pick-up Date',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
                 child: TextField(
                   decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.calendar_today),
-                      hintText: 'Drop-off Date',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                    prefixIcon: Icon(Icons.calendar_today),
+                    hintText: 'Drop-off Date',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
           SizedBox(height: 12),
-          ElevatedButton(onPressed: () {}, child: Text('Search Button')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+            onPressed: () {},
+            child: Text('Search Button'),
+          ),
         ],
       ),
     );
   }
-  }
-
-
+}

@@ -5,11 +5,14 @@ class ExplorePage extends StatelessWidget {
   const ExplorePage({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text("Explore"), backgroundColor: Colors.white),
-    body: const Center(
+    appBar: AppBar(title: const Text("Explore")),
+    body: Center(
       child: Text(
         "Explore destinations and interests here.",
-        style: TextStyle(fontSize: 18),
+        style: TextStyle(
+          fontSize: 18,
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        ),
       ),
     ),
   );
@@ -24,35 +27,33 @@ class InboxPage extends StatefulWidget {
 
 class _InboxPageState extends State<InboxPage>
     with SingleTickerProviderStateMixin {
-  @override
-  void initState() {
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
     length: 2,
     child: Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0.5,
-        title: const Text(
+        title: Text(
           "Inbox",
           style: TextStyle(
-            color: Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontSize: 26,
           ),
         ),
-        bottom: const TabBar(
-          tabs: [
+        bottom: TabBar(
+          tabs: const [
             Tab(text: "Notifications"),
             Tab(text: "Messages"),
           ],
           labelColor: Colors.blue,
-          unselectedLabelColor: Colors.black54,
-          labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          unselectedLabelColor: Theme.of(context).hintColor,
+          labelStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
           indicatorColor: Colors.blue,
           indicatorWeight: 3,
           indicatorSize: TabBarIndicatorSize.label,
@@ -76,68 +77,60 @@ class _TabContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (type == TabContentType.notifications) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
-        children: [
-          Icon(Icons.notifications_none, size: 84, color: Colors.blue),
-          const SizedBox(height: 22),
-          const Text(
-            "No notifications yet",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 19,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
+    final bool isNotifications = type == TabContentType.notifications;
+    // if (type == TabContentType.notifications) {
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
+      children: [
+        Icon(
+          isNotifications
+              ? Icons.notifications_none
+              : Icons.chat_bubble_outline,
+          size: 84,
+          color: Colors.blue,
+        ),
+        const SizedBox(height: 22),
+        Text(
+          isNotifications ? "No notifications yet" : "No messages yet",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 19,
+            color: Theme.of(context).textTheme.titleLarge?.color,
           ),
-          const SizedBox(height: 14),
-          const Text(
-            "You'll get alerts about your trips and account here. Ready to book your next trip?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.black54),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 14),
+        Text(
+          isNotifications
+              ? "You'll get alerts about your trips and account here. Ready to book your next trip?"
+              : "Hotels and properties can message you here after you book a stay.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15,
+            color: Theme.of(context).textTheme.bodySmall?.color,
           ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: 220,
-            child: ElevatedButton(
-              onPressed: () => Get.to(() => const ExplorePage()),
-              style: ElevatedButton.styleFrom(
-                shape: const StadiumBorder(),
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(vertical: 13),
+        ),
+        const SizedBox(height: 32),
+        if (isNotifications)
+          Center(
+            child: SizedBox(
+              width: 220,
+              child: ElevatedButton(
+                onPressed: () => Get.to(() => const ExplorePage()),
+                style: ElevatedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white, // Ensure text is white on blue
+                  padding: const EdgeInsets.symmetric(vertical: 13),
+                ),
+                child: const Text(
+                  "Start exploring",
+                  style: TextStyle(fontSize: 16),
+                ),
               ),
-              child: const Text(
-                "Start exploring",
-                style: TextStyle(fontSize: 16),
-              ),
             ),
           ),
-        ],
-      );
-    } else {
-      return ListView(
-        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 22),
-        children: [
-          Icon(Icons.chat_bubble_outline, size: 84, color: Colors.blue),
-          const SizedBox(height: 26),
-          const Text(
-            "No messages yet",
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 19,
-              color: Colors.black,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 14),
-          const Text(
-            "Hotels and properties can message you here after you book a stay.",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 15, color: Colors.black54),
-          ),
-        ],
-      );
-    }
+      ],
+    );
   }
 }

@@ -1,5 +1,5 @@
-import 'package:expedia/pages/home/flights/multi-city/multi_city.dart';
-import 'package:expedia/pages/home/flights/one_way.dart';
+import 'package:expedia/pages/home/flights/multi_city_page.dart';
+import 'package:expedia/pages/home/flights/OnewayPage/one_way_page.dart';
 import 'package:expedia/pages/home/flights/round_trip.dart';
 import 'package:flutter/material.dart';
 import 'widgets/flight_tab_bar.dart';

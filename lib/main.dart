@@ -1,4 +1,5 @@
 import 'package:expedia/pages/home/auth/auth_controller.dart';
+import 'package:expedia/pages/home/auth/sign_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'pages/account/controllers/setting_controller.dart';
@@ -19,7 +20,8 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      // home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      home: SignInPage(),
     );
   }
 }

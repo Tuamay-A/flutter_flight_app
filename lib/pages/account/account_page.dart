@@ -83,7 +83,6 @@ class AccountPage extends StatelessWidget {
                 ),
                 onPressed: () {
                   Get.offAll(() => const SignInPage());
-                  // Get.to(() => const SignInPage());
                 },
                 child: const Text(
                   "Sign Out",
