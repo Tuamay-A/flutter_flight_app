@@ -89,6 +89,9 @@ dev_dependencies:
 
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
+
+dependency_overrides:
+  shared_preferences_android: 2.4.20
 flutter_icons:
   android: true
   ios: true
