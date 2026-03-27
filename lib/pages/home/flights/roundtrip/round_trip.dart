@@ -109,26 +109,17 @@ class _RoundtripPageState extends State<RoundtripPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final controller = Get.find<FlightController>();
-
+    
     // Extract airport codes
     final fromCode = _extractAirportCode(fromController.text);
     final toCode = _extractAirportCode(toController.text);
-    final departDateStr = DateFormat(
-      'yyyy-MM-dd',
-    ).format(_departDate ?? DateTime.now());
-    final returnDateStr = DateFormat(
-      'yyyy-MM-dd',
-    ).format(_returnDate ?? DateTime.now().add(const Duration(days: 3)));
+    final dateStr = DateFormat('yyyy-MM-dd').format(_departDate ?? DateTime.now());
 
     final request = FlightShoppingRequest(
       originDestinations: [
         OriginDestination(
-          departure: Departure(airportCode: fromCode, date: departDateStr),
+          departure: Departure(airportCode: fromCode, date: dateStr),
           arrival: Arrival(airportCode: toCode),
-        ),
-        OriginDestination(
-          departure: Departure(airportCode: toCode, date: returnDateStr),
-          arrival: Arrival(airportCode: fromCode),
         ),
       ],
       travellers: Travellers(adt: travelers),
