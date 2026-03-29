@@ -16,12 +16,7 @@ void main() async {
   await Get.putAsync(() => AirportSearchService().init());
   Get.put(FlightController());
   Get.put(AuthController());
-  runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => MyApp(),
-    ),
-  );
+  runApp(DevicePreview(enabled: true, builder: (context) => MyApp()));
 }
 
 class MyApp extends StatelessWidget {
