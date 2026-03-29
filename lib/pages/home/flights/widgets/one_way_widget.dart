@@ -172,16 +172,21 @@ class _OneWayState extends State<OneWayWidget> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   final controller = Get.find<FlightController>();
-                  
+
                   // Extract airport codes
                   final fromCode = _extractAirportCode(fromController.text);
                   final toCode = _extractAirportCode(toController.text);
-                  final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate ?? DateTime.now());
+                  final dateStr = DateFormat(
+                    'yyyy-MM-dd',
+                  ).format(_selectedDate ?? DateTime.now());
 
                   final request = FlightShoppingRequest(
                     originDestinations: [
                       OriginDestination(
-                        departure: Departure(airportCode: fromCode, date: dateStr),
+                        departure: Departure(
+                          airportCode: fromCode,
+                          date: dateStr,
+                        ),
                         arrival: Arrival(airportCode: toCode),
                       ),
                     ],

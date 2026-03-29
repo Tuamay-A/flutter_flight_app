@@ -270,34 +270,6 @@ class _SignInPageState extends State<SignInPage> {
               ),
 
               const SizedBox(height: 24),
-
-              // Hint text
-              Text.rich(
-                TextSpan(
-                  text: 'Try: ',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colors.onSurface.withValues(alpha: 0.4),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'test@example.com',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const TextSpan(text: ' / '),
-                    TextSpan(
-                      text: '123456',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: colors.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),

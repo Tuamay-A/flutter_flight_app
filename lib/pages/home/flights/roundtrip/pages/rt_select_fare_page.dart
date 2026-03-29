@@ -180,9 +180,12 @@ class RtSelectFarePage extends StatelessWidget {
     final cardBg = isDark ? const Color(0xFF151A24) : Colors.white;
     final borderColor = isDark ? const Color(0xFF2A3141) : Colors.grey.shade200;
 
-    final departFare = departureFlight.price * fare.priceMultiplier;
-    final returnFare = returnFlight.price * fare.priceMultiplier;
-    final totalFare = departFare + returnFare;
+    // Use the API total price directly — do NOT add departure + return
+    final controller = Get.find<FlightController>();
+    final apiTotal = controller.currentGrandTotal > 0
+        ? controller.currentGrandTotal
+        : double.tryParse(departureFlight.price.toString()) ?? 0.0;
+    final totalFare = apiTotal;
     final priceWhole = NumberFormat.simpleCurrency(
       name: 'USD',
       decimalDigits: 0,
@@ -259,9 +262,28 @@ class RtSelectFarePage extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
+                  final controller = Get.find<FlightController>();
+                  final apiTotal = controller.currentGrandTotal > 0
+                      ? controller.currentGrandTotal
+                      : departureFlight.price;
+                  // Store API total in departureFlight.price by creating a copy with correct price
+                  final depWithApiPrice = RoundTripFlight(
+                    id: departureFlight.id,
+                    airline: departureFlight.airline,
+                    flightNumber: departureFlight.flightNumber,
+                    fromCity: departureFlight.fromCity,
+                    toCity: departureFlight.toCity,
+                    date: departureFlight.date,
+                    departTime: departureFlight.departTime,
+                    arriveTime: departureFlight.arriveTime,
+                    duration: departureFlight.duration,
+                    stops: departureFlight.stops,
+                    price: apiTotal,
+                    cabin: departureFlight.cabin,
+                  );
                   final booking = RoundTripBooking(
                     criteria: criteria,
-                    departureFlight: departureFlight,
+                    departureFlight: depWithApiPrice,
                     returnFlight: returnFlight,
                     fare: fare,
                   );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 enum FlightSortOption {
   recommended,
@@ -112,97 +111,6 @@ class FlightSearchPill extends StatelessWidget {
               onPressed: onShare,
             ),
         ],
-      ),
-    );
-  }
-}
-
-/// A horizontal scroller for date-price pairs.
-class DatePriceScroller extends StatelessWidget {
-  final Map<DateTime, double> datePrices;
-  final DateTime selectedDate;
-  final Function(DateTime) onDateSelected;
-
-  const DatePriceScroller({
-    super.key,
-    required this.datePrices,
-    required this.selectedDate,
-    required this.onDateSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (datePrices.isEmpty) return const SizedBox.shrink();
-    
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final colors = Theme.of(context).colorScheme;
-    final sortedDates = datePrices.keys.toList()..sort();
-    final formatter = NumberFormat.simpleCurrency(name: 'USD', decimalDigits: 0);
-
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: isDark ? const Color(0xFF2A3141) : Colors.grey.shade200,
-          ),
-        ),
-      ),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        itemCount: sortedDates.length,
-        itemBuilder: (context, index) {
-          final date = sortedDates[index];
-          final price = datePrices[date]!;
-          final isSelected =
-              date.day == selectedDate.day &&
-              date.month == selectedDate.month &&
-              date.year == selectedDate.year;
-
-          return GestureDetector(
-            onTap: () => onDateSelected(date),
-            child: Container(
-              width: 90,
-              margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? (isDark ? const Color(0xFF1A2340) : const Color(0xFFE3F2FD))
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border: isSelected
-                    ? Border.all(color: const Color(0xFF1565C0), width: 2)
-                    : null,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    DateFormat('E, MMM d').format(date),
-                    style: TextStyle(
-                      color: isSelected
-                          ? (isDark ? Colors.white : const Color(0xFF1565C0))
-                          : colors.onSurface,
-                      fontSize: 11,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    formatter.format(price),
-                    style: TextStyle(
-                      color: isSelected
-                          ? (isDark ? Colors.white : const Color(0xFF1565C0))
-                          : colors.onSurface,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
       ),
     );
   }
@@ -357,7 +265,7 @@ class FlightSortFilterFab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
@@ -383,13 +291,17 @@ class FlightSortFilterFab extends StatelessWidget {
                 Icon(
                   Icons.tune,
                   size: 18,
-                  color: isDark ? const Color(0xFF7FB5FF) : const Color(0xFF1565C0),
+                  color: isDark
+                      ? const Color(0xFF7FB5FF)
+                      : const Color(0xFF1565C0),
                 ),
                 const SizedBox(width: 8),
                 Text(
                   'Sort & Filter',
                   style: TextStyle(
-                    color: isDark ? const Color(0xFF7FB5FF) : const Color(0xFF1565C0),
+                    color: isDark
+                        ? const Color(0xFF7FB5FF)
+                        : const Color(0xFF1565C0),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -504,7 +416,9 @@ void showFlightSortFilterSheet({
       final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
       final colors = Theme.of(sheetContext).colorScheme;
       final bgColor = isDark ? const Color(0xFF151A24) : Colors.white;
-      final accentColor = isDark ? const Color(0xFF7FB5FF) : const Color(0xFF1565C0);
+      final accentColor = isDark
+          ? const Color(0xFF7FB5FF)
+          : const Color(0xFF1565C0);
 
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
@@ -520,7 +434,9 @@ void showFlightSortFilterSheet({
                   fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
-              trailing: selected ? Icon(Icons.check, color: accentColor, size: 20) : null,
+              trailing: selected
+                  ? Icon(Icons.check, color: accentColor, size: 20)
+                  : null,
               onTap: () => setSheetState(() => tempSort = value),
             );
           }
@@ -539,7 +455,9 @@ void showFlightSortFilterSheet({
                   fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                 ),
                 side: BorderSide(
-                  color: selected ? accentColor : colors.onSurface.withValues(alpha: 0.3),
+                  color: selected
+                      ? accentColor
+                      : colors.onSurface.withValues(alpha: 0.3),
                 ),
                 showCheckmark: false,
               ),
@@ -552,7 +470,9 @@ void showFlightSortFilterSheet({
             ),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -567,7 +487,10 @@ void showFlightSortFilterSheet({
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Row(
                     children: [
                       Text(
@@ -585,7 +508,10 @@ void showFlightSortFilterSheet({
                           tempStop = 'Any';
                           tempAirlines = {};
                         }),
-                        child: Text('Reset', style: TextStyle(color: accentColor)),
+                        child: Text(
+                          'Reset',
+                          style: TextStyle(color: accentColor),
+                        ),
                       ),
                     ],
                   ),
@@ -609,11 +535,26 @@ void showFlightSortFilterSheet({
                           ),
                         ),
                         sortTile('Recommended', FlightSortOption.recommended),
-                        sortTile('Price (low to high)', FlightSortOption.priceLow),
-                        sortTile('Price (high to low)', FlightSortOption.priceHigh),
-                        sortTile('Duration (shortest)', FlightSortOption.durationShort),
-                        sortTile('Departure (earliest)', FlightSortOption.departEarly),
-                        sortTile('Departure (latest)', FlightSortOption.departLate),
+                        sortTile(
+                          'Price (low to high)',
+                          FlightSortOption.priceLow,
+                        ),
+                        sortTile(
+                          'Price (high to low)',
+                          FlightSortOption.priceHigh,
+                        ),
+                        sortTile(
+                          'Duration (shortest)',
+                          FlightSortOption.durationShort,
+                        ),
+                        sortTile(
+                          'Departure (earliest)',
+                          FlightSortOption.departEarly,
+                        ),
+                        sortTile(
+                          'Departure (latest)',
+                          FlightSortOption.departLate,
+                        ),
                         const SizedBox(height: 8),
                         const Divider(height: 1),
                         Padding(
@@ -651,11 +592,18 @@ void showFlightSortFilterSheet({
                           ),
                         ),
                         ...availableAirlines.map((airline) {
-                          final selected = tempAirlines.isEmpty || tempAirlines.contains(airline);
+                          final selected =
+                              tempAirlines.isEmpty ||
+                              tempAirlines.contains(airline);
                           return CheckboxListTile(
                             dense: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 24),
-                            title: Text(airline, style: TextStyle(color: colors.onSurface)),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
+                            title: Text(
+                              airline,
+                              style: TextStyle(color: colors.onSurface),
+                            ),
                             value: selected,
                             activeColor: accentColor,
                             onChanged: (val) {
@@ -670,7 +618,8 @@ void showFlightSortFilterSheet({
                                     tempAirlines = availableAirlines.toSet();
                                   }
                                   tempAirlines.remove(airline);
-                                  if (tempAirlines.length == availableAirlines.length) {
+                                  if (tempAirlines.length ==
+                                      availableAirlines.length) {
                                     tempAirlines = {};
                                   }
                                 }
@@ -703,7 +652,10 @@ void showFlightSortFilterSheet({
                         ),
                         child: const Text(
                           'Apply',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

@@ -29,20 +29,63 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
   final _birthDateController = TextEditingController();
   final _passportController = TextEditingController();
   final _titleController = TextEditingController();
+  final _cardHolderController = TextEditingController();
   final _cardController = TextEditingController();
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
-  
+
   String _paymentMethod = 'Visa';
   String? _genderValue;
   String _selectedCountryCode = '+1';
-  
+
   static const List<String> _genderOptions = ['MALE', 'FEMALE'];
   static const List<String> _countryCodes = [
-    '+1', '+20', '+27', '+31', '+32', '+33', '+34', '+39', '+41', '+44', '+46', '+47', '+49',
-    '+52', '+54', '+55', '+61', '+63', '+64', '+65', '+81', '+82', '+84', '+86', '+90', '+91',
-    '+92', '+94', '+98', '+212', '+213', '+234', '+251', '+254', '+351', '+353', '+358',
-    '+380', '+420', '+48', '+852', '+886', '+966', '+971', '+972', '+974'
+    '+1',
+    '+20',
+    '+27',
+    '+31',
+    '+32',
+    '+33',
+    '+34',
+    '+39',
+    '+41',
+    '+44',
+    '+46',
+    '+47',
+    '+49',
+    '+52',
+    '+54',
+    '+55',
+    '+61',
+    '+63',
+    '+64',
+    '+65',
+    '+81',
+    '+82',
+    '+84',
+    '+86',
+    '+90',
+    '+91',
+    '+92',
+    '+94',
+    '+98',
+    '+212',
+    '+213',
+    '+234',
+    '+251',
+    '+254',
+    '+351',
+    '+353',
+    '+358',
+    '+380',
+    '+420',
+    '+48',
+    '+852',
+    '+886',
+    '+966',
+    '+971',
+    '+972',
+    '+974',
   ];
 
   @override
@@ -54,6 +97,7 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
     _birthDateController.dispose();
     _passportController.dispose();
     _titleController.dispose();
+    _cardHolderController.dispose();
     _cardController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
@@ -66,64 +110,63 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final controller = Get.find<FlightController>();
-    
+
     final passenger = Passenger(
       gender: _genderValue ?? 'MALE',
       birthDate: _birthDateController.text,
-      phoneNo: '$_selectedCountryCode ${_phoneController.text}',
+      phoneNo:
+          '$_selectedCountryCode${_phoneController.text.replaceAll(' ', '')}',
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
-      country: 'USA',
+      country: 'US',
       passPort: _passportController.text,
-      title: _titleController.text,
+      title: _titleController.text.toUpperCase(),
       email: _emailController.text,
-      paxId: '1',
+      paxId: 'PAX1',
     );
 
-    final holdRequest = BookingHoldRequest(
-      offerId: widget.booking.departureFlight.id,
-      passengers: [passenger],
-    );
+    final success = await controller.startBooking([passenger]);
 
-    final success = await controller.startBooking(holdRequest);
-    
     if (success) {
-      // Create payment request
-      final payOption = controller.paymentOptions.firstWhere(
-        (o) => o.name == _paymentMethod || o.id == _paymentMethod,
-        orElse: () => controller.paymentOptions.isNotEmpty 
-            ? controller.paymentOptions.first 
-            : PaymentOption(id: '1'),
-      );
+      final payOption = controller.paymentOptions.isNotEmpty
+          ? controller.paymentOptions.first
+          : PaymentOption(id: 145, name: 'Debit / Credit Cards');
 
       final cardInfo = CardInfo(
-        cardHolder: '${_firstNameController.text} ${_lastNameController.text}',
-        cardNumber: _cardController.text,
+        cardHolder: _cardHolderController.text,
+        cardNumber: _cardController.text.replaceAll(' ', ''),
         expireMonth: _expiryController.text.split('/').first,
         expireYear: '20' + _expiryController.text.split('/').last,
         cvv: _cvvController.text,
       );
 
-      final confirmRequest = ConfirmBookingRequest(
-        bookingLocator: controller.bookingLocator.value,
-        payOption: payOption,
-        cardInfo: cardInfo,
+      final confirmSuccess = await controller.confirmBooking(
+        controller.bookingLocator.value,
+        payOption,
+        cardInfo,
       );
-
-      final confirmSuccess = await controller.confirmBooking(confirmRequest);
 
       if (confirmSuccess) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => RtBookingConfirmationPage(booking: widget.booking),
+            builder: (context) =>
+                RtBookingConfirmationPage(booking: widget.booking),
           ),
         );
       } else {
-        Get.snackbar('Error', 'Payment failed: ${controller.errorMessage.value}', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Error',
+          'Payment failed: ${controller.errorMessage.value}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } else {
-      Get.snackbar('Error', 'Booking hold failed: ${controller.errorMessage.value}', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Booking hold failed: ${controller.errorMessage.value}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -176,7 +219,7 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
               ),
               Row(
                 children: [
-                   Expanded(
+                  Expanded(
                     child: CustomBookingFields.buildTextField(
                       context: context,
                       label: 'Title',
@@ -219,7 +262,8 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
                 context: context,
                 selectedCountryCode: _selectedCountryCode,
                 phoneController: _phoneController,
-                onCountryCodeChanged: (val) => setState(() => _selectedCountryCode = val!),
+                onCountryCodeChanged: (val) =>
+                    setState(() => _selectedCountryCode = val!),
                 validator: _requiredValidator,
               ),
               const SizedBox(height: 20),
@@ -228,24 +272,34 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
               _buildDropdown(),
               CustomBookingFields.buildTextField(
                 context: context,
+                label: 'Card holder',
+                controller: _cardHolderController,
+                validator: _requiredValidator,
+                hintText: 'Name on card',
+              ),
+              CustomBookingFields.buildTextField(
+                context: context,
                 label: 'Card number',
                 controller: _cardController,
                 keyboardType: TextInputType.number,
                 validator: _requiredValidator,
                 hintText: '0000 0000 0000 0000',
-                suffixIcon: const Icon(Icons.lock, size: 20, color: Colors.grey),
+                suffixIcon: const Icon(
+                  Icons.lock,
+                  size: 20,
+                  color: Colors.grey,
+                ),
               ),
               Row(
                 children: [
                   Expanded(
-                    child: CustomBookingFields.buildDatePickerField(
+                    child: CustomBookingFields.buildTextField(
                       context: context,
                       label: 'Expiry date (MM/YY)',
                       controller: _expiryController,
+                      keyboardType: TextInputType.datetime,
                       validator: _requiredValidator,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(DateTime.now().year + 20),
-                      isExpiry: true,
+                      hintText: 'MM/YY',
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -261,10 +315,16 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              Obx(() => _buildTotalRow(
-                'Total to pay', 
-                formatter.format(Get.find<FlightController>().currentGrandTotal > 0 ? Get.find<FlightController>().currentGrandTotal : _totalPrice)
-              )),
+              Obx(
+                () => _buildTotalRow(
+                  'Total to pay',
+                  formatter.format(
+                    Get.find<FlightController>().currentGrandTotal > 0
+                        ? Get.find<FlightController>().currentGrandTotal
+                        : _totalPrice,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -334,6 +394,7 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
@@ -342,12 +403,17 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
               fontSize: 13,
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -453,24 +519,39 @@ class _RtSecureBookingPageState extends State<RtSecureBookingPage> {
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1565C0),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
+        child: Obx(() {
+          final isLoading = Get.find<FlightController>().isLoading.value;
+          return SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1565C0),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
               ),
+              onPressed: isLoading ? null : _completeBooking,
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : const Text(
+                      'Complete Booking',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
-            onPressed: _completeBooking,
-            child: const Text(
-              'Complete Booking',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

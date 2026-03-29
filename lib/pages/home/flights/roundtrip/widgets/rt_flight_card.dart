@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/round_trip_models.dart';
 
-/// Reusable flight card matching Expedia style for round-trip flights.
 class RtFlightCard extends StatelessWidget {
   final RoundTripFlight flight;
   final VoidCallback onSelect;
@@ -22,15 +21,21 @@ class RtFlightCard extends StatelessWidget {
     final cardColor = isDark ? const Color(0xFF151A24) : Colors.white;
     final borderColor = isDark ? const Color(0xFF2A3141) : Colors.grey.shade200;
     final textColor = colors.onSurface;
-    final mutedColor = colors.onSurface.withValues(alpha: 0.6);
+    final mutedColor = colors.onSurface.withValues(alpha: 0.55);
+    final accentColor = isDark
+        ? const Color(0xFF7FB5FF)
+        : const Color(0xFF1565C0);
 
     final priceText = NumberFormat.simpleCurrency(
       name: 'USD',
       decimalDigits: 0,
     ).format(flight.price);
 
+    final fromName = _airportFullName(flight.fromCity, flight.fromCode);
+    final toName = _airportFullName(flight.toCity, flight.toCode);
+    final routeText = '$fromName - $toName';
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
@@ -45,160 +50,130 @@ class RtFlightCard extends StatelessWidget {
                 ),
               ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onSelect,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Row 1: Airline icon + times + price
-                Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Tappable area
+          Material(
+            color: Colors.transparent,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: InkWell(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              onTap: onSelect,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildAirlineIcon(context),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    // Row 1: icon + times + arrow + price
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildAirlineIcon(context),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Row(
                             children: [
                               Text(
                                 flight.departTime,
                                 style: TextStyle(
                                   color: textColor,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
+                                overflow: TextOverflow.visible,
+                                softWrap: false,
                               ),
                               const SizedBox(width: 6),
-                              _buildTimeConnector(isDark),
+                              _buildArrow(isDark),
                               const SizedBox(width: 6),
                               Text(
                                 flight.arriveTime,
                                 style: TextStyle(
                                   color: textColor,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
+                                overflow: TextOverflow.visible,
+                                softWrap: false,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (flight.seatsLeft != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              '${flight.seatsLeft} left',
-                              style: const TextStyle(
-                                color: Color(0xFFC62828),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              priceText,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        Text(
-                          priceText,
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            Text(
+                              'per traveler',
+                              style: TextStyle(color: mutedColor, fontSize: 11),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                // Row 2: Route + duration + stops
-                Row(
-                  children: [
-                    const SizedBox(width: 38), // align with text above
-                    Expanded(
-                      child: Text(
-                        '${flight.fromCode}(${_shortCity(flight.fromCity)}) - ${_shortCity(flight.toCity)}(${flight.toCode})',
-                        style: TextStyle(color: mutedColor, fontSize: 13),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    const SizedBox(width: 38),
-                    Expanded(
-                      child: Text(
-                        '${flight.duration}  ·  ${flight.stops}',
-                        style: TextStyle(color: mutedColor, fontSize: 13),
-                      ),
-                    ),
+                    const SizedBox(height: 8),
+                    // Row 2: full route names from API
                     Text(
-                      'per traveler',
-                      style: TextStyle(color: mutedColor, fontSize: 12),
+                      routeText,
+                      style: TextStyle(color: mutedColor, fontSize: 13),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    // Row 3: airline name
+                    Text(
+                      flight.airline.toUpperCase(),
+                      style: TextStyle(
+                        color: mutedColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    // Row 4: duration · stops
+                    Text(
+                      '${_formatDuration(flight.duration)} · ${flight.stops}',
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
-                if (flight.layoverInfo != null) ...[
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const SizedBox(width: 38),
-                      Expanded(
-                        child: Text(
-                          flight.layoverInfo!,
-                          style: TextStyle(color: mutedColor, fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                if (flight.operatedBy != null) ...[
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const SizedBox(width: 38),
-                      Expanded(
-                        child: Text(
-                          'Operated by ${flight.operatedBy}',
-                          style: TextStyle(
-                            color: mutedColor,
-                            fontSize: 11,
-                            fontStyle: FontStyle.italic,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 10),
-                // Flight details link
-                GestureDetector(
-                  onTap: onFlightDetails ?? () {},
-                  child: Text(
-                    'Flight details',
-                    style: TextStyle(
-                      color: isDark
-                          ? const Color(0xFF7FB5FF)
-                          : const Color(0xFF1565C0),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
-        ),
+          // Flight details — outside the tap
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: onFlightDetails ?? () {},
+                child: Text(
+                  'Flight details',
+                  style: TextStyle(
+                    color: accentColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -206,18 +181,18 @@ class RtFlightCard extends StatelessWidget {
   Widget _buildAirlineIcon(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: 28,
-      height: 28,
+      width: 36,
+      height: 36,
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A2340) : const Color(0xFFE8EAF6),
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Center(
         child: Text(
-          flight.airline.substring(0, 1).toUpperCase(),
+          flight.airline.isNotEmpty ? flight.airline[0].toUpperCase() : '?',
           style: TextStyle(
             color: isDark ? const Color(0xFF7FB5FF) : const Color(0xFF1565C0),
-            fontSize: 13,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -225,52 +200,37 @@ class RtFlightCard extends StatelessWidget {
     );
   }
 
-  String _shortCity(String city) {
-    return city.split(' (').first;
-  }
-
-  Widget _buildTimeConnector(bool isDark) {
+  Widget _buildArrow(bool isDark) {
+    final color = isDark ? Colors.white38 : Colors.grey.shade400;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isDark ? Colors.white54 : Colors.grey,
-              width: 1,
-            ),
-          ),
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
-        Container(
-          width: 30,
-          height: 1,
-          color: isDark ? Colors.white24 : Colors.grey.shade400,
-        ),
-        Icon(
-          Icons.flight,
-          size: 14,
-          color: isDark ? Colors.white54 : Colors.grey,
-        ),
-        Container(
-          width: 30,
-          height: 1,
-          color: isDark ? Colors.white24 : Colors.grey.shade400,
-        ),
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isDark ? Colors.white54 : Colors.grey,
-              width: 1,
-            ),
-          ),
-        ),
+        Container(width: 24, height: 1.5, color: color),
+        Icon(Icons.arrow_forward, size: 12, color: color),
       ],
     );
+  }
+
+  String _formatDuration(String duration) {
+    if (duration.startsWith('PT')) {
+      return duration
+          .replaceAll('PT', '')
+          .replaceAll('H', 'h ')
+          .replaceAll('M', 'm')
+          .trim();
+    }
+    return duration;
+  }
+
+  /// fromCity already contains "Airport Name (CODE)" from API
+  String _airportFullName(String cityField, String code) {
+    // If already formatted (contains parentheses), return as-is
+    if (cityField.contains('(')) return cityField;
+    return '$cityField ($code)';
   }
 }

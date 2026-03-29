@@ -40,12 +40,11 @@ class _RtSeatSelectionPageState extends State<RtSeatSelectionPage> {
   double get _totalSeatPrice => _departSeatPrice + _returnSeatPrice;
 
   double get _tripTotal {
-    final dep = widget.booking.departureFlight;
-    final ret = widget.booking.returnFlight;
-    final fare = widget.booking.fare;
-    return dep.price * fare.priceMultiplier +
-        ret.price * fare.priceMultiplier +
-        _totalSeatPrice;
+    final controller = Get.find<FlightController>();
+    final apiTotal = controller.currentGrandTotal > 0
+        ? controller.currentGrandTotal
+        : widget.booking.departureFlight.price;
+    return apiTotal + _totalSeatPrice;
   }
 
   List<List<SeatInfo>> get _activeSeatMap =>
@@ -160,18 +159,22 @@ class _RtSeatSelectionPageState extends State<RtSeatSelectionPage> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
         children: [
-          _segmentPill(
-            context,
-            '$fromName – $toName',
-            selected: _activeSegment == 0,
-            onTap: () => setState(() => _activeSegment = 0),
+          Flexible(
+            child: _segmentPill(
+              context,
+              '$fromName – $toName',
+              selected: _activeSegment == 0,
+              onTap: () => setState(() => _activeSegment = 0),
+            ),
           ),
           const SizedBox(width: 8),
-          _segmentPill(
-            context,
-            '$retFromName – $retToName',
-            selected: _activeSegment == 1,
-            onTap: () => setState(() => _activeSegment = 1),
+          Flexible(
+            child: _segmentPill(
+              context,
+              '$retFromName – $retToName',
+              selected: _activeSegment == 1,
+              onTap: () => setState(() => _activeSegment = 1),
+            ),
           ),
         ],
       ),
@@ -227,12 +230,15 @@ class _RtSeatSelectionPageState extends State<RtSeatSelectionPage> {
               ),
             ),
             const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                color: colors.onSurface,
-                fontSize: 12,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: colors.onSurface,
+                  fontSize: 12,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                ),
               ),
             ),
           ],
