@@ -4,6 +4,7 @@ class Passenger {
   final String phoneNo;
   final String firstName;
   final String lastName;
+  final String middleName;
   final String country;
   final String passPort;
   final String title;
@@ -11,6 +12,11 @@ class Passenger {
   final bool notify;
   final String paxType;
   final String paxId;
+  final String accountNumber;
+  final String depBarcodeImage;
+  final String retBarcodeImage;
+  final String depBarcodeCid;
+  final String retBarcodeCid;
 
   Passenger({
     required this.gender,
@@ -18,6 +24,7 @@ class Passenger {
     required this.phoneNo,
     required this.firstName,
     required this.lastName,
+    this.middleName = '',
     required this.country,
     required this.passPort,
     required this.title,
@@ -25,6 +32,11 @@ class Passenger {
     this.notify = true,
     this.paxType = 'ADT',
     required this.paxId,
+    this.accountNumber = '',
+    this.depBarcodeImage = '',
+    this.retBarcodeImage = '',
+    this.depBarcodeCid = '',
+    this.retBarcodeCid = '',
   });
 
   Map<String, dynamic> toJson() {
@@ -34,6 +46,7 @@ class Passenger {
       'phoneNo': phoneNo,
       'firstName': firstName,
       'lastName': lastName,
+      'middleName': middleName,
       'country': country,
       'passPort': passPort,
       'title': title,
@@ -41,6 +54,11 @@ class Passenger {
       'notify': notify,
       'paxType': paxType,
       'paxId': paxId,
+      'accountNumber': accountNumber,
+      'depBarcodeImage': depBarcodeImage,
+      'retBarcodeImage': retBarcodeImage,
+      'depBarcodeCid': depBarcodeCid,
+      'retBarcodeCid': retBarcodeCid,
     };
   }
 
@@ -51,6 +69,7 @@ class Passenger {
       phoneNo: json['phoneNo'] ?? '',
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',
+      middleName: json['middleName'] ?? '',
       country: json['country'] ?? '',
       passPort: json['passPort'] ?? '',
       title: json['title'] ?? '',
@@ -58,6 +77,11 @@ class Passenger {
       notify: json['notify'] ?? true,
       paxType: json['paxType'] ?? 'ADT',
       paxId: json['paxId'] ?? '',
+      accountNumber: json['accountNumber'] ?? '',
+      depBarcodeImage: json['depBarcodeImage'] ?? '',
+      retBarcodeImage: json['retBarcodeImage'] ?? '',
+      depBarcodeCid: json['depBarcodeCid'] ?? '',
+      retBarcodeCid: json['retBarcodeCid'] ?? '',
     );
   }
 }
