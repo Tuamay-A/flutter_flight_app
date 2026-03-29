@@ -19,12 +19,8 @@ class FlightShoppingRequest {
       'travellers': travellers.toJson(),
       'preference': preference.toJson(),
     };
-    if (promoCode != null) {
-      data['promoCode'] = promoCode;
-    }
-    if (corporateCode != null) {
-      data['corporateCode'] = corporateCode!.toJson();
-    }
+    if (promoCode != null) data['promoCode'] = promoCode;
+    if (corporateCode != null) data['corporateCode'] = corporateCode!.toJson();
     return data;
   }
 }
@@ -35,12 +31,10 @@ class OriginDestination {
 
   OriginDestination({required this.departure, required this.arrival});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'departure': departure.toJson(),
-      'arrival': arrival.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'departure': departure.toJson(),
+    'arrival': arrival.toJson(),
+  };
 }
 
 class Departure {
@@ -49,12 +43,7 @@ class Departure {
 
   Departure({required this.airportCode, required this.date});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'airportCode': airportCode,
-      'date': date,
-    };
-  }
+  Map<String, dynamic> toJson() => {'airportCode': airportCode, 'date': date};
 }
 
 class Arrival {
@@ -62,27 +51,31 @@ class Arrival {
 
   Arrival({required this.airportCode});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'airportCode': airportCode,
-    };
-  }
+  Map<String, dynamic> toJson() => {'airportCode': airportCode};
 }
 
 class Travellers {
   final int adt;
   final int chd;
   final int inf;
+  final int ins;
+  final int unn;
 
-  Travellers({required this.adt, this.chd = 0, this.inf = 0});
+  Travellers({
+    required this.adt,
+    this.chd = 0,
+    this.inf = 0,
+    this.ins = 0,
+    this.unn = 0,
+  });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'adt': adt,
-      'chd': chd,
-      'inf': inf,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'adt': adt,
+    'chd': chd,
+    'inf': inf,
+    'ins': ins,
+    'unn': unn,
+  };
 }
 
 class Preference {
@@ -90,11 +83,9 @@ class Preference {
 
   Preference({required this.cabinPreferences});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'cabinPreferences': cabinPreferences.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'cabinPreferences': cabinPreferences.toJson(),
+  };
 }
 
 class CabinPreferences {
@@ -102,11 +93,7 @@ class CabinPreferences {
 
   CabinPreferences({required this.cabinType});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'cabinType': cabinType.toJson(),
-    };
-  }
+  Map<String, dynamic> toJson() => {'cabinType': cabinType.toJson()};
 }
 
 class CabinType {
@@ -114,11 +101,7 @@ class CabinType {
 
   CabinType({required this.code});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'code': code.toLowerCase(),
-    };
-  }
+  Map<String, dynamic> toJson() => {'code': code.toLowerCase()};
 }
 
 class CorporateCode {
@@ -127,15 +110,14 @@ class CorporateCode {
 
   CorporateCode({required this.accountNumber, required this.airlineCode});
 
-  Map<String, dynamic> toJson() {
-    return {
-      'accountNumber': accountNumber,
-      'airlineCode': airlineCode,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    'accountNumber': accountNumber,
+    'airlineCode': airlineCode,
+  };
 }
 
-// Basic Response Model (to be refined as actual response structure is seen)
+// ─── Response Models ───
+
 class FlightShoppingResponse {
   final List<FlightOffer> offers;
 
@@ -143,13 +125,10 @@ class FlightShoppingResponse {
 
   factory FlightShoppingResponse.fromJson(Map<String, dynamic> json) {
     List<dynamic> offersList = [];
-    
-    // Check Fannos format (qrFlights)
-    if (json['data'] != null && json['data']['qrFlights'] != null && json['data']['qrFlights']['offers'] != null) {
-      offersList = json['data']['qrFlights']['offers'];
-    } 
-    // Fallback formats
-    else if (json['data'] != null && json['data']['flightOffers'] != null) {
+
+    if (json['data'] != null && json['data']['qrFlights'] != null) {
+      offersList = json['data']['qrFlights']['offers'] ?? [];
+    } else if (json['data'] != null && json['data']['flightOffers'] != null) {
       offersList = json['data']['flightOffers'];
     } else if (json['offers'] != null) {
       offersList = json['offers'];
@@ -162,83 +141,147 @@ class FlightShoppingResponse {
 }
 
 class FlightOffer {
-  final String id;
+  final String id; // offerId
+  final String? offerItemId;
+  final String? provider;
   final FlightPrice price;
   final String airline;
   final List<FlightItinerary> itineraries;
+  // Raw flights list — needed to extract productId for itineraryIdList
+  final List<FlightLeg> flights;
+  final List<BaggageService> baggageServices;
 
   FlightOffer({
     required this.id,
+    this.offerItemId,
+    this.provider,
     required this.price,
     required this.airline,
     required this.itineraries,
+    required this.flights,
+    this.baggageServices = const [],
   });
 
   factory FlightOffer.fromJson(Map<String, dynamic> json) {
+    final flightsList = (json['flights'] as List? ?? [])
+        .map((f) => FlightLeg.fromJson(f))
+        .toList();
+
     return FlightOffer(
       id: json['offerId'] ?? json['id'] ?? '',
+      offerItemId: json['offerItemId'],
+      provider: json['provider'],
       price: FlightPrice.fromJson(json['pricing'] ?? json['price'] ?? {}),
       airline: _extractAirline(json),
       itineraries: _extractItineraries(json),
+      flights: flightsList,
+      baggageServices: (json['baggageServices'] as List? ?? [])
+          .map((b) => BaggageService.fromJson(b))
+          .toList(),
     );
   }
 
+  /// itineraryIdList = flights[].productId  (NOT segment ids)
+  List<String> get itineraryIdList =>
+      flights.map((f) => f.productId).where((id) => id.isNotEmpty).toList();
+
   static String _extractAirline(Map<String, dynamic> json) {
-    if (json['airline'] != null) return json['airline'];
-    
-    // Try Fannos format: flights[0].segments[0].airlineName
     try {
       final flights = json['flights'] as List?;
       if (flights != null && flights.isNotEmpty) {
         final segments = flights[0]['segments'] as List?;
         if (segments != null && segments.isNotEmpty) {
-           return segments[0]['airlineName'] ?? segments[0]['airlineCode'] ?? '';
+          return segments[0]['airlineName'] ?? segments[0]['airlineCode'] ?? '';
         }
       }
     } catch (_) {}
-    return '';
+    return json['airline'] ?? '';
   }
 
   static List<FlightItinerary> _extractItineraries(Map<String, dynamic> json) {
-    if (json['itineraries'] != null) {
-       return (json['itineraries'] as List).map((i) => FlightItinerary.fromJson(i)).toList();
-    }
-    
-    // Fannos format
-    if (json['flights'] != null) {
-      return (json['flights'] as List).map((f) {
-         return FlightItinerary(
-           duration: f['duration'] ?? '',
-           segments: (f['segments'] as List? ?? []).map((s) {
-              return FlightSegment(
-                 number: s['flightNumber'] ?? '',
-                 carrierCode: s['airlineCode'] ?? '',
-                 departure: FlightEndpoint(
-                    iataCode: s['departureAirport'] ?? '',
-                    at: s['departureDateTime'] ?? ''
-                 ),
-                 arrival: FlightEndpoint(
-                    iataCode: s['arrivalAirport'] ?? '',
-                    at: s['arrivalDateTime'] ?? ''
-                 )
-              );
-           }).toList()
-         );
-      }).toList();
-    }
-    return [];
+    final flights = json['flights'] as List?;
+    if (flights == null) return [];
+
+    return flights.map((f) {
+      final segments = (f['segments'] as List? ?? []);
+      return FlightItinerary(
+        duration: f['duration'] ?? '',
+        productId: f['productId'] ?? '',
+        originCode: f['originCode'] ?? '',
+        destinationCode: f['destinationCode'] ?? '',
+        segments: segments.map((s) => FlightSegment.fromJson(s)).toList(),
+      );
+    }).toList();
   }
+}
+
+class FlightLeg {
+  final String productId;
+  final String duration;
+  final String originCode;
+  final String destinationCode;
+
+  FlightLeg({
+    required this.productId,
+    required this.duration,
+    required this.originCode,
+    required this.destinationCode,
+  });
+
+  factory FlightLeg.fromJson(Map<String, dynamic> json) {
+    return FlightLeg(
+      productId: json['productId'] ?? '',
+      duration: json['duration'] ?? '',
+      originCode: json['originCode'] ?? '',
+      destinationCode: json['destinationCode'] ?? '',
+    );
+  }
+}
+
+class BaggageService {
+  final String typeCode;
+  final int totalQuantity;
+  final String description;
+
+  BaggageService({
+    required this.typeCode,
+    required this.totalQuantity,
+    required this.description,
+  });
+
+  factory BaggageService.fromJson(Map<String, dynamic> json) {
+    return BaggageService(
+      typeCode: json['typeCode'] ?? '',
+      totalQuantity: json['totalQuantity'] ?? 0,
+      description: json['description'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'typeCode': typeCode,
+    'totalQuantity': totalQuantity,
+    'description': description,
+  };
 }
 
 class FlightPrice {
   final String total;
+  final String baseFare;
+  final String taxes;
   final String currency;
 
-  FlightPrice({required this.total, required this.currency});
+  FlightPrice({
+    required this.total,
+    required this.baseFare,
+    required this.taxes,
+    required this.currency,
+  });
 
   factory FlightPrice.fromJson(Map<String, dynamic> json) {
     return FlightPrice(
       total: json['total']?.toString() ?? '0',
+      baseFare: json['baseFare']?.toString() ?? json['base']?.toString() ?? '0',
+      taxes: json['taxes']?.toString() ?? json['fees']?.toString() ?? '0',
       currency: json['currency'] ?? 'USD',
     );
   }
@@ -246,13 +289,25 @@ class FlightPrice {
 
 class FlightItinerary {
   final String duration;
+  final String productId;
+  final String originCode;
+  final String destinationCode;
   final List<FlightSegment> segments;
 
-  FlightItinerary({required this.duration, required this.segments});
+  FlightItinerary({
+    required this.duration,
+    required this.productId,
+    required this.originCode,
+    required this.destinationCode,
+    required this.segments,
+  });
 
   factory FlightItinerary.fromJson(Map<String, dynamic> json) {
     return FlightItinerary(
       duration: json['duration'] ?? '',
+      productId: json['productId'] ?? '',
+      originCode: json['originCode'] ?? '',
+      destinationCode: json['destinationCode'] ?? '',
       segments: (json['segments'] as List? ?? [])
           .map((i) => FlightSegment.fromJson(i))
           .toList(),
@@ -261,24 +316,48 @@ class FlightItinerary {
 }
 
 class FlightSegment {
-  final String number;
-  final String carrierCode;
+  final String id;
+  final String number; // flightNumber
+  final String carrierCode; // airlineCode
+  final String airlineName;
+  final String operatingAirlineCode;
   final FlightEndpoint departure;
   final FlightEndpoint arrival;
+  final String classOfService;
+  final String rbd;
 
   FlightSegment({
+    required this.id,
     required this.number,
     required this.carrierCode,
+    this.airlineName = '',
+    this.operatingAirlineCode = '',
     required this.departure,
     required this.arrival,
+    this.classOfService = '',
+    this.rbd = '',
   });
 
   factory FlightSegment.fromJson(Map<String, dynamic> json) {
     return FlightSegment(
-      number: json['number'] ?? '',
-      carrierCode: json['carrierCode'] ?? '',
-      departure: FlightEndpoint.fromJson(json['departure'] ?? {}),
-      arrival: FlightEndpoint.fromJson(json['arrival'] ?? {}),
+      id: json['id']?.toString() ?? json['flightNumber']?.toString() ?? '',
+      number: json['flightNumber'] ?? json['number'] ?? '',
+      carrierCode: json['airlineCode'] ?? json['carrierCode'] ?? '',
+      airlineName: json['airlineName'] ?? '',
+      operatingAirlineCode:
+          json['operatingArlineCode'] ?? json['operatingAirlineCode'] ?? '',
+      departure: FlightEndpoint(
+        iataCode: json['departureAirport'] ?? json['iataCode'] ?? '',
+        at: json['departureDateTime'] ?? '',
+        airportName: json['departureAirportName'] ?? '',
+      ),
+      arrival: FlightEndpoint(
+        iataCode: json['arrivalAirport'] ?? '',
+        at: json['arrivalDateTime'] ?? '',
+        airportName: json['arrivalAirportName'] ?? '',
+      ),
+      classOfService: json['classOfService'] ?? '',
+      rbd: json['rbd'] ?? '',
     );
   }
 }
@@ -286,13 +365,88 @@ class FlightSegment {
 class FlightEndpoint {
   final String iataCode;
   final String at;
+  final String airportName;
 
-  FlightEndpoint({required this.iataCode, required this.at});
+  FlightEndpoint({
+    required this.iataCode,
+    required this.at,
+    this.airportName = '',
+  });
 
   factory FlightEndpoint.fromJson(Map<String, dynamic> json) {
     return FlightEndpoint(
       iataCode: json['iataCode'] ?? '',
       at: json['at'] ?? '',
+      airportName: json['airportName'] ?? '',
     );
   }
+}
+
+// ─── Offer Price Models ───
+
+class OfferPriceRequest {
+  final String executionId;
+  final String provider;
+  final List<OfferItem> offerItems;
+  final List<String> itineraryIdList;
+  final Travellers travellers;
+  final List<OriginDestination> originDestinations;
+
+  OfferPriceRequest({
+    required this.executionId,
+    required this.provider,
+    required this.offerItems,
+    required this.itineraryIdList,
+    required this.travellers,
+    required this.originDestinations,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'executionId': executionId,
+    'fareId': executionId,
+    'provider': provider,
+    'metadata': {
+      'country': 'ET',
+      'currency': 'USD',
+      'locale': 'en-US',
+      'traceId': null,
+    },
+    'offerItems': offerItems.map((e) => e.toJson()).toList(),
+    'travellers': travellers.toJson(),
+    'originDestinations': originDestinations.map((o) => o.toJson()).toList(),
+    'itineraryIdList': itineraryIdList,
+  };
+}
+
+class OfferItem {
+  final String offerId;
+  final String offerItemId;
+  final String owner; // provider
+  final List<dynamic> baggageAllowance;
+  final String baseAmount; // baseFare
+  final String taxAmount; // taxes
+  final String totalAmount;
+  final String currency;
+
+  OfferItem({
+    required this.offerId,
+    required this.offerItemId,
+    required this.owner,
+    this.baggageAllowance = const [],
+    required this.baseAmount,
+    required this.taxAmount,
+    required this.totalAmount,
+    required this.currency,
+  });
+
+  Map<String, dynamic> toJson() => {
+    'offerId': offerId,
+    'offerItemId': offerItemId,
+    'owner': owner,
+    'baggageAllowance': baggageAllowance,
+    'baseAmount': baseAmount,
+    'taxAmount': taxAmount,
+    'totalAmount': totalAmount,
+    'currency': currency,
+  };
 }
