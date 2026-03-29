@@ -232,9 +232,10 @@ class _MultiCityRecommendedPageState extends State<MultiCityRecommendedPage> {
   }
 
   // ──────────── Flight Selection Logic ────────────
-  void _handleSelect(BuildContext context, MultiCityFlight flight) {
+  Future<void> _handleSelect(BuildContext context, MultiCityFlight flight) async {
     if (widget.segmentIndex == 1) {
       final nextSelection = widget.selection.copyWith(flight1: flight);
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -247,6 +248,7 @@ class _MultiCityRecommendedPageState extends State<MultiCityRecommendedPage> {
     } else if (widget.segmentIndex == 2 &&
         widget.selection.criteria.hasThirdLeg) {
       final nextSelection = widget.selection.copyWith(flight2: flight);
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -259,11 +261,14 @@ class _MultiCityRecommendedPageState extends State<MultiCityRecommendedPage> {
     } else if (widget.segmentIndex == 2) {
       final nextSelection = widget.selection.copyWith(flight2: flight);
       final controller = Get.find<FlightController>();
-      Get.showOverlay(
-        asyncFunction: () => controller.selectOffer(flight.id),
+      final offer = controller.flightOffers.firstWhere((o) => o.id == flight.id);
+      // CRITICAL: await so executionId is populated before booking
+      await Get.showOverlay(
+        asyncFunction: () => controller.selectOffer(offer),
         loadingWidget: const Center(child: CircularProgressIndicator()),
       );
 
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -274,11 +279,14 @@ class _MultiCityRecommendedPageState extends State<MultiCityRecommendedPage> {
     } else {
       final nextSelection = widget.selection.copyWith(flight3: flight);
       final controller = Get.find<FlightController>();
-      Get.showOverlay(
-        asyncFunction: () => controller.selectOffer(flight.id),
+      final offer = controller.flightOffers.firstWhere((o) => o.id == flight.id);
+      // CRITICAL: await so executionId is populated before booking
+      await Get.showOverlay(
+        asyncFunction: () => controller.selectOffer(offer),
         loadingWidget: const Center(child: CircularProgressIndicator()),
       );
 
+      if (!context.mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(

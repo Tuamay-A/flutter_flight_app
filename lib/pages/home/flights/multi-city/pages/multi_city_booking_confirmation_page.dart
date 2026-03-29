@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models.dart';
+import 'package:get/get.dart';
+import '../../controllers/flight_controller.dart';
 
 class MultiCityBookingConfirmationPage extends StatelessWidget {
   final MultiCitySelection selection;
@@ -21,7 +23,8 @@ class MultiCityBookingConfirmationPage extends StatelessWidget {
     final pageBackground = isDark
         ? const Color(0xFF0B0F1A)
         : Colors.white;
-    final bookingId = _generateBookingId();
+    final controller = Get.find<FlightController>();
+    final bookingId = controller.bookingLocator.value.isNotEmpty ? controller.bookingLocator.value : _generateBookingId();
     final formatter = NumberFormat.simpleCurrency(name: 'USD');
 
     return Scaffold(
