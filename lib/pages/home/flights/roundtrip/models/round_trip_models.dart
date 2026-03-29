@@ -93,8 +93,6 @@ class RtFareFeature {
 
 enum RtFareFeatureType { included, paid, notIncluded }
 
-
-
 /// Baggage option.
 class RtBaggageOption {
   final String label;
@@ -157,10 +155,11 @@ class RoundTripBooking {
   double get totalSeatPrice => departureSeatPrice + returnSeatPrice;
 
   double get totalPrice {
-    final departFare = departureFlight.price * fare.priceMultiplier;
-    final returnFare = returnFlight.price * fare.priceMultiplier;
+    // Use the API total price directly — the API already includes both legs
     final bagPrice = baggage?.price ?? 0;
-    return departFare + returnFare + totalSeatPrice + bagPrice;
+    return (departureFlight.price * fare.priceMultiplier) +
+        totalSeatPrice +
+        bagPrice;
   }
 }
 
@@ -172,11 +171,26 @@ List<RtFareOption> getRtFareOptions() => const [
     description: 'No changes or cancellations',
     priceMultiplier: 1.0,
     features: [
-      RtFareFeature(text: 'Personal item included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Carry-on bag not included', type: RtFareFeatureType.notIncluded),
-      RtFareFeature(text: 'Seat assigned at check-in', type: RtFareFeatureType.notIncluded),
-      RtFareFeature(text: 'Non-refundable', type: RtFareFeatureType.notIncluded),
-      RtFareFeature(text: 'No changes allowed', type: RtFareFeatureType.notIncluded),
+      RtFareFeature(
+        text: 'Personal item included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Carry-on bag not included',
+        type: RtFareFeatureType.notIncluded,
+      ),
+      RtFareFeature(
+        text: 'Seat assigned at check-in',
+        type: RtFareFeatureType.notIncluded,
+      ),
+      RtFareFeature(
+        text: 'Non-refundable',
+        type: RtFareFeatureType.notIncluded,
+      ),
+      RtFareFeature(
+        text: 'No changes allowed',
+        type: RtFareFeatureType.notIncluded,
+      ),
     ],
   ),
   RtFareOption(
@@ -184,10 +198,22 @@ List<RtFareOption> getRtFareOptions() => const [
     description: 'Changes for a fee',
     priceMultiplier: 1.15,
     features: [
-      RtFareFeature(text: 'Personal item included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Carry-on bag included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Seat choice for a fee', type: RtFareFeatureType.paid),
-      RtFareFeature(text: 'Non-refundable', type: RtFareFeatureType.notIncluded),
+      RtFareFeature(
+        text: 'Personal item included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Carry-on bag included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Seat choice for a fee',
+        type: RtFareFeatureType.paid,
+      ),
+      RtFareFeature(
+        text: 'Non-refundable',
+        type: RtFareFeatureType.notIncluded,
+      ),
       RtFareFeature(text: 'Change fee: \$100', type: RtFareFeatureType.paid),
     ],
   ),
@@ -196,11 +222,26 @@ List<RtFareOption> getRtFareOptions() => const [
     description: 'Free changes & cancellation',
     priceMultiplier: 1.40,
     features: [
-      RtFareFeature(text: 'Personal item included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Carry-on bag included', type: RtFareFeatureType.included),
-      RtFareFeature(text: '1 checked bag included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Seat choice included', type: RtFareFeatureType.included),
-      RtFareFeature(text: 'Free cancellation', type: RtFareFeatureType.included),
+      RtFareFeature(
+        text: 'Personal item included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Carry-on bag included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: '1 checked bag included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Seat choice included',
+        type: RtFareFeatureType.included,
+      ),
+      RtFareFeature(
+        text: 'Free cancellation',
+        type: RtFareFeatureType.included,
+      ),
       RtFareFeature(text: 'Free changes', type: RtFareFeatureType.included),
     ],
   ),
@@ -223,7 +264,9 @@ List<List<SeatInfo>> generateRtSeatMap() {
       } else if (isExit) {
         seats.add(SeatInfo(label: label, type: SeatType.exit, extraPrice: 35));
       } else if (row <= 4) {
-        seats.add(SeatInfo(label: label, type: SeatType.premium, extraPrice: 55));
+        seats.add(
+          SeatInfo(label: label, type: SeatType.premium, extraPrice: 55),
+        );
       } else {
         seats.add(SeatInfo(label: label, type: SeatType.available));
       }
@@ -234,7 +277,22 @@ List<List<SeatInfo>> generateRtSeatMap() {
 }
 
 List<RtBaggageOption> getRtBaggageOptions() => const [
-  RtBaggageOption(label: 'No checked bags', description: 'Carry-on only', price: 0, bags: 0),
-  RtBaggageOption(label: '1 checked bag', description: 'Up to 50 lbs (23 kg)', price: 40, bags: 1),
-  RtBaggageOption(label: '2 checked bags', description: 'Up to 50 lbs (23 kg) each', price: 75, bags: 2),
+  RtBaggageOption(
+    label: 'No checked bags',
+    description: 'Carry-on only',
+    price: 0,
+    bags: 0,
+  ),
+  RtBaggageOption(
+    label: '1 checked bag',
+    description: 'Up to 50 lbs (23 kg)',
+    price: 40,
+    bags: 1,
+  ),
+  RtBaggageOption(
+    label: '2 checked bags',
+    description: 'Up to 50 lbs (23 kg) each',
+    price: 75,
+    bags: 2,
+  ),
 ];

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 import '../models/round_trip_models.dart';
+import '../../controllers/flight_controller.dart';
 import '../widgets/rt_step_indicator.dart';
 import '../widgets/rt_bottom_bar.dart';
 import 'rt_seat_selection_page.dart';
@@ -18,10 +20,14 @@ class RtReviewTripPage extends StatelessWidget {
     final pageBackground = isDark ? const Color(0xFF0B0F1A) : Colors.white;
     final dep = booking.departureFlight;
     final ret = booking.returnFlight;
+    // ignore: unused_local_variable
     final fare = booking.fare;
-    final departFare = dep.price * fare.priceMultiplier;
-    final returnFare = ret.price * fare.priceMultiplier;
-    final totalFare = departFare + returnFare;
+    // Use API total price — do NOT add departure + return separately
+    final controller = Get.find<FlightController>();
+    final apiTotal = controller.currentGrandTotal > 0
+        ? controller.currentGrandTotal
+        : dep.price;
+    final totalFare = apiTotal;
 
     final fromName = dep.fromCity.split(' (').first;
     final toName = dep.toCity.split(' (').first;
@@ -67,7 +73,7 @@ class RtReviewTripPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 _buildFareCard(context),
                 const SizedBox(height: 16),
-                _buildPriceSummary(context, departFare, returnFare, totalFare),
+                _buildPriceSummary(context, totalFare),
               ],
             ),
           ),
@@ -291,19 +297,18 @@ class RtReviewTripPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceSummary(
-    BuildContext context,
-    double departFare,
-    double returnFare,
-    double totalFare,
-  ) {
+  Widget _buildPriceSummary(BuildContext context, double totalFare) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = Theme.of(context).colorScheme;
     final cardColor = isDark ? const Color(0xFF151A24) : Colors.white;
     final borderColor = isDark ? const Color(0xFF2A3141) : Colors.grey.shade200;
     final formatter = NumberFormat.simpleCurrency(name: 'USD');
-    final taxes = totalFare * 0.08;
-    final grandTotal = totalFare + taxes;
+    final controller = Get.find<FlightController>();
+    final baseFare = controller.currentBasePrice > 0
+        ? controller.currentBasePrice
+        : totalFare * 0.66;
+    final taxes = 1.0;
+    final grandTotal = baseFare + taxes;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -324,9 +329,7 @@ class RtReviewTripPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _priceRow(context, 'Departing flight', formatter.format(departFare)),
-          const SizedBox(height: 8),
-          _priceRow(context, 'Return flight', formatter.format(returnFare)),
+          _priceRow(context, 'Base fare', formatter.format(baseFare)),
           const SizedBox(height: 8),
           _priceRow(context, 'Taxes & fees', formatter.format(taxes)),
           const Divider(height: 20),

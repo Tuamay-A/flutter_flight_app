@@ -30,13 +30,11 @@ class _RtBagsPageState extends State<RtBagsPage> {
   double get _bagsTotal => _options[_selectedBagIndex].price;
 
   double get _tripTotal {
-    final dep = widget.booking.departureFlight;
-    final ret = widget.booking.returnFlight;
-    final fare = widget.booking.fare;
-    return dep.price * fare.priceMultiplier +
-        ret.price * fare.priceMultiplier +
-        widget.booking.totalSeatPrice +
-        _bagsTotal;
+    final controller = Get.find<FlightController>();
+    final apiTotal = controller.currentGrandTotal > 0
+        ? controller.currentGrandTotal
+        : widget.booking.departureFlight.price;
+    return apiTotal + widget.booking.totalSeatPrice + _bagsTotal;
   }
 
   @override
