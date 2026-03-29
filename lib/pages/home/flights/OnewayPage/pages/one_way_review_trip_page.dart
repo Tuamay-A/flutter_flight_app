@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 import '../models/one_way_models.dart';
+import '../../controllers/flight_controller.dart';
 import '../widgets/booking_app_bar.dart';
 import '../widgets/booking_step_indicator.dart';
 import '../widgets/booking_bottom_bar.dart';
@@ -257,37 +259,45 @@ class OneWayReviewTripPage extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final cardColor = isDark ? const Color(0xFF151A24) : Colors.white;
     final borderColor = isDark ? const Color(0xFF2A3141) : Colors.grey.shade200;
-    final formatter = NumberFormat.simpleCurrency(name: 'USD');
-    final taxes = farePrice * 0.08;
-    final total = farePrice + taxes;
+    final controller = Get.find<FlightController>();
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Price breakdown',
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+    return Obx(() {
+      // Use real base fare from API, fallback to flight.price
+      final baseFare = controller.currentBasePrice > 0
+          ? controller.currentBasePrice
+          : booking.flight.price;
+      const taxes = 1.0;
+      final total = baseFare + taxes;
+      final formatter = NumberFormat.currency(name: 'USD', symbol: '\$');
+
+      return Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Price breakdown',
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          _priceRow(context, 'Flight', formatter.format(farePrice)),
-          const SizedBox(height: 8),
-          _priceRow(context, 'Taxes & fees', formatter.format(taxes)),
-          const Divider(height: 20),
-          _priceRow(context, 'Total', formatter.format(total), bold: true),
-        ],
-      ),
-    );
+            const SizedBox(height: 12),
+            _priceRow(context, 'Base fare', formatter.format(baseFare)),
+            const SizedBox(height: 8),
+            _priceRow(context, 'Taxes & fees', formatter.format(taxes)),
+            const Divider(height: 20),
+            _priceRow(context, 'Total', formatter.format(total), bold: true),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _priceRow(

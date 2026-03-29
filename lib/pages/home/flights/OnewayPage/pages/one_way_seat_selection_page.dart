@@ -130,14 +130,22 @@ class _OneWaySeatSelectionPageState extends State<OneWaySeatSelectionPage> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Row(
         children: [
-          _segmentPill(
-            context,
-            '$fromName – ${layoverCity ?? toName}',
-            selected: true,
+          Flexible(
+            child: _segmentPill(
+              context,
+              '$fromName – ${layoverCity ?? toName}',
+              selected: true,
+            ),
           ),
           if (hasStop && layoverCity != null) ...[
             const SizedBox(width: 8),
-            _segmentPill(context, '$layoverCity – $toName', selected: false),
+            Flexible(
+              child: _segmentPill(
+                context,
+                '$layoverCity – $toName',
+                selected: false,
+              ),
+            ),
           ],
         ],
       ),
@@ -186,12 +194,15 @@ class _OneWaySeatSelectionPageState extends State<OneWaySeatSelectionPage> {
             ),
           ),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 12,
-              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              ),
             ),
           ),
         ],
@@ -234,6 +245,4 @@ class _OneWaySeatSelectionPageState extends State<OneWaySeatSelectionPage> {
       ),
     );
   }
-
-
 }

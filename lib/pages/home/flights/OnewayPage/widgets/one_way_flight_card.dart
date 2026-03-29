@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/one_way_models.dart';
 
-/// Reusable flight card matching Expedia style for one-way flights.
 class OneWayFlightCard extends StatelessWidget {
   final OneWayFlight flight;
   final VoidCallback onSelect;
@@ -23,6 +22,9 @@ class OneWayFlightCard extends StatelessWidget {
     final borderColor = isDark ? const Color(0xFF2A3141) : Colors.grey.shade200;
     final textColor = colors.onSurface;
     final mutedColor = colors.onSurface.withValues(alpha: 0.6);
+    final accentColor = isDark
+        ? const Color(0xFF7FB5FF)
+        : const Color(0xFF1565C0);
 
     final priceText = NumberFormat.simpleCurrency(
       name: 'USD',
@@ -45,142 +47,146 @@ class OneWayFlightCard extends StatelessWidget {
                 ),
               ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onSelect,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Row 1: Airline icon + times + price
-                Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ── Tappable area (select flight) ──
+          Material(
+            color: Colors.transparent,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: InkWell(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
+              onTap: onSelect,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildAirlineIcon(context),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    // Row 1: icon + times + price
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildAirlineIcon(context),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Row(
                             children: [
-                              Text(
-                                flight.departTime,
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Flexible(
+                                child: Text(
+                                  flight.departTime,
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 6),
                               _buildTimeConnector(isDark),
                               const SizedBox(width: 6),
-                              Text(
-                                flight.arriveTime,
-                                style: TextStyle(
-                                  color: textColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Flexible(
+                                child: Text(
+                                  flight.arriveTime,
+                                  style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (flight.seatsLeft != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 2),
-                            child: Text(
-                              '${flight.seatsLeft} left at',
-                              style: const TextStyle(
-                                color: Color(0xFFE53935),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            if (flight.seatsLeft != null)
+                              Text(
+                                '${flight.seatsLeft} left at',
+                                style: const TextStyle(
+                                  color: Color(0xFFE53935),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            Text(
+                              priceText,
+                              style: TextStyle(
+                                color: textColor,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        Text(
-                          priceText,
-                          style: TextStyle(
-                            color: textColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'One way per traveler',
-                          style: TextStyle(color: mutedColor, fontSize: 11),
+                            Text(
+                              'One way per traveler',
+                              style: TextStyle(color: mutedColor, fontSize: 11),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // Route
-                Text(
-                  '${_shortCity(flight.fromCity)} (${flight.fromCode}) - ${_shortCity(flight.toCity)} (${flight.toCode})',
-                  style: TextStyle(color: mutedColor, fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                // Airline + operated by
-                Text(
-                  flight.operatedBy != null
-                      ? '${flight.airline} operated by ${flight.operatedBy}'
-                      : flight.airline,
-                  style: TextStyle(
-                    color: colors.onSurface.withValues(alpha: 0.7),
-                    fontSize: 12,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                // Duration & stops
-                Text(
-                  '${flight.duration} · ${flight.stops}',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                if (flight.layoverInfo != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    flight.layoverInfo!,
-                    style: TextStyle(color: mutedColor, fontSize: 12),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                // Flight details link
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: onFlightDetails ?? onSelect,
-                    child: Text(
-                      'Flight details',
+                    const SizedBox(height: 8),
+                    // Route
+                    Text(
+                      '${_shortCity(flight.fromCity)} (${flight.fromCode}) - ${_shortCity(flight.toCity)} (${flight.toCode})',
+                      style: TextStyle(color: mutedColor, fontSize: 13),
+                    ),
+                    const SizedBox(height: 4),
+                    // Airline
+                    Text(
+                      flight.operatedBy != null
+                          ? '${flight.airline} operated by ${flight.operatedBy}'
+                          : flight.airline,
                       style: TextStyle(
-                        color: isDark
-                            ? const Color(0xFF7FB5FF)
-                            : const Color(0xFF1565C0),
+                        color: colors.onSurface.withValues(alpha: 0.7),
+                        fontSize: 12,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    // Duration & stops
+                    Text(
+                      '${flight.duration} · ${flight.stops}',
+                      style: TextStyle(
+                        color: textColor,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ),
+                    if (flight.layoverInfo != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        flight.layoverInfo!,
+                        style: TextStyle(color: mutedColor, fontSize: 12),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+          // ── Flight details — OUTSIDE the tap ──
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: onFlightDetails ?? () {},
+                child: Text(
+                  'Flight details',
+                  style: TextStyle(
+                    color: accentColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -196,7 +202,7 @@ class OneWayFlightCard extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          flight.airline.substring(0, 1).toUpperCase(),
+          flight.airline.isNotEmpty ? flight.airline[0].toUpperCase() : '?',
           style: TextStyle(
             color: isDark ? const Color(0xFF7FB5FF) : const Color(0xFF1565C0),
             fontSize: 16,
@@ -227,7 +233,5 @@ class OneWayFlightCard extends StatelessWidget {
     );
   }
 
-  String _shortCity(String city) {
-    return city.split(' (').first;
-  }
+  String _shortCity(String city) => city.split(' (').first;
 }

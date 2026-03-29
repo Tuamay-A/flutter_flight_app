@@ -119,45 +119,30 @@ class OneWaySelectFarePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                flight.airline,
-                style: TextStyle(color: colors.onSurface, fontSize: 14),
+              Flexible(
+                child: Text(
+                  flight.airline,
+                  style: TextStyle(color: colors.onSurface, fontSize: 14),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Icon(
                 Icons.wifi,
                 size: 18,
                 color: colors.onSurface.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Icon(
                 Icons.usb,
                 size: 18,
                 color: colors.onSurface.withValues(alpha: 0.5),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Icon(
                 Icons.personal_video,
                 size: 18,
                 color: colors.onSurface.withValues(alpha: 0.5),
-              ),
-              const SizedBox(width: 12),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF1E2433)
-                      : Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  'Average CO₂',
-                  style: TextStyle(
-                    color: colors.onSurface.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
               ),
             ],
           ),
@@ -256,7 +241,7 @@ class OneWaySelectFarePage extends StatelessWidget {
                     flight: flight,
                     fare: fare,
                   );
-                  
+
                   // controller.selectOffer is now called before this page opens
 
                   Navigator.push(

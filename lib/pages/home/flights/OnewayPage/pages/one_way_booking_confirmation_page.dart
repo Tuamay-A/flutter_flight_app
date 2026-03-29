@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/one_way_models.dart';
+import 'package:get/get.dart';
+import '../../controllers/flight_controller.dart';
 
 /// Page 8: Booking confirmation — success screen.
 class OneWayBookingConfirmationPage extends StatelessWidget {
@@ -15,7 +17,9 @@ class OneWayBookingConfirmationPage extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final pageBackground = isDark ? const Color(0xFF0B0F1A) : Colors.white;
     final formatter = NumberFormat.simpleCurrency(name: 'USD');
-    final bookingId = _generateBookingId();
+    final controller = Get.find<FlightController>();
+    final bookingId = controller.bookingLocator.value.isNotEmpty ? controller.bookingLocator.value : _generateBookingId();
+    final finalPrice = controller.currentGrandTotal > 0 ? controller.currentGrandTotal : booking.totalPrice;
 
     return Scaffold(
       backgroundColor: pageBackground,
@@ -33,7 +37,7 @@ class OneWayBookingConfirmationPage extends StatelessWidget {
           const SizedBox(height: 20),
           _buildFlightSummaryCard(context),
           const SizedBox(height: 18),
-          _buildPriceCard(context, formatter),
+          _buildPriceCard(context, formatter, finalPrice),
           const SizedBox(height: 30),
           SizedBox(
             height: 52,
@@ -193,7 +197,7 @@ class OneWayBookingConfirmationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceCard(BuildContext context, NumberFormat formatter) {
+  Widget _buildPriceCard(BuildContext context, NumberFormat formatter, double finalPrice) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final colors = Theme.of(context).colorScheme;
     final cardColor = isDark ? const Color(0xFF151A24) : Colors.white;
@@ -217,7 +221,7 @@ class OneWayBookingConfirmationPage extends StatelessWidget {
             ),
           ),
           Text(
-            formatter.format(booking.totalPrice),
+            formatter.format(finalPrice),
             style: TextStyle(
               color: colors.onSurface,
               fontSize: 22,

@@ -30,14 +30,14 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
   final _birthDateController = TextEditingController();
   final _passportController = TextEditingController();
   final _titleController = TextEditingController();
+  final _cardHolderController = TextEditingController();
   final _cardController = TextEditingController();
   final _expiryController = TextEditingController();
   final _cvvController = TextEditingController();
-  
+
   String _paymentMethod = 'Visa';
   String? _genderValue;
   String _selectedCountryCode = '+1';
-  
 
   @override
   void dispose() {
@@ -48,6 +48,7 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
     _birthDateController.dispose();
     _passportController.dispose();
     _titleController.dispose();
+    _cardHolderController.dispose();
     _cardController.dispose();
     _expiryController.dispose();
     _cvvController.dispose();
@@ -60,68 +61,65 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
     if (!_formKey.currentState!.validate()) return;
 
     final controller = Get.find<FlightController>();
-    
-    // Construct Passenger object
-    // Note: OneWaySecureBookingPage currently has a simpler form. 
-    // I should ensure it matches API requirements.
+
     final passenger = Passenger(
       gender: _genderValue ?? 'MALE',
       birthDate: _birthDateController.text,
-      phoneNo: '$_selectedCountryCode ${_phoneController.text}',
+      phoneNo:
+          '$_selectedCountryCode${_phoneController.text.replaceAll(' ', '')}',
       firstName: _firstNameController.text,
       lastName: _lastNameController.text,
-      country: 'USA',
+      country: 'US',
       passPort: _passportController.text,
-      title: _titleController.text,
+      title: _titleController.text.toUpperCase(),
       email: _emailController.text,
-      paxId: '1',
+      paxId: 'PAX1',
     );
 
-    final holdRequest = BookingHoldRequest(
-      offerId: widget.booking.flight.id,
-      passengers: [passenger],
-    );
+    final success = await controller.startBooking([passenger]);
 
-    final success = await controller.startBooking(holdRequest);
-    
     if (success) {
-      // Create payment request
-      final payOption = controller.paymentOptions.firstWhere(
-        (o) => o.name == _paymentMethod || o.id == _paymentMethod,
-        orElse: () => controller.paymentOptions.isNotEmpty 
-            ? controller.paymentOptions.first 
-            : PaymentOption(id: '1'),
-      );
+      final payOption = controller.paymentOptions.isNotEmpty
+          ? controller.paymentOptions.first
+          : PaymentOption(id: 145, name: 'Debit / Credit Cards');
 
       final cardInfo = CardInfo(
-        cardHolder: '${_firstNameController.text} ${_lastNameController.text}',
-        cardNumber: _cardController.text,
+        cardHolder: _cardHolderController.text,
+        cardNumber: _cardController.text.replaceAll(' ', ''),
         expireMonth: _expiryController.text.split('/').first,
         expireYear: '20' + _expiryController.text.split('/').last,
         cvv: _cvvController.text,
       );
 
-      final confirmRequest = ConfirmBookingRequest(
-        bookingLocator: controller.bookingLocator.value,
-        payOption: payOption,
-        cardInfo: cardInfo,
+      // Using the booking locator from the controller (Step 5 response)
+      final confirmSuccess = await controller.confirmBooking(
+        controller.bookingLocator.value,
+        payOption,
+        cardInfo,
       );
-
-      final confirmSuccess = await controller.confirmBooking(confirmRequest);
 
       if (confirmSuccess) {
         Navigator.push(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(
-            builder: (context) => OneWayBookingConfirmationPage(booking: widget.booking),
+            builder: (context) =>
+                OneWayBookingConfirmationPage(booking: widget.booking),
           ),
         );
       } else {
-        Get.snackbar('Error', 'Payment failed: ${controller.errorMessage.value}', snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar(
+          'Error',
+          'Payment failed: ${controller.errorMessage.value}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } else {
-      Get.snackbar('Error', 'Booking hold failed: ${controller.errorMessage.value}', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        'Error',
+        'Booking hold failed: ${controller.errorMessage.value}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
@@ -165,7 +163,7 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
               ),
               Row(
                 children: [
-                   Expanded(
+                  Expanded(
                     child: CustomBookingFields.buildTextField(
                       context: context,
                       label: 'Title',
@@ -208,7 +206,8 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
                 context: context,
                 selectedCountryCode: _selectedCountryCode,
                 phoneController: _phoneController,
-                onCountryCodeChanged: (val) => setState(() => _selectedCountryCode = val!),
+                onCountryCodeChanged: (val) =>
+                    setState(() => _selectedCountryCode = val!),
                 validator: _requiredValidator,
               ),
               const SizedBox(height: 20),
@@ -217,24 +216,34 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
               _buildDropdown(),
               CustomBookingFields.buildTextField(
                 context: context,
+                label: 'Card holder',
+                controller: _cardHolderController,
+                validator: _requiredValidator,
+                hintText: 'Name on card',
+              ),
+              CustomBookingFields.buildTextField(
+                context: context,
                 label: 'Card number',
                 controller: _cardController,
                 keyboardType: TextInputType.number,
                 validator: _requiredValidator,
                 hintText: '0000 0000 0000 0000',
-                suffixIcon: const Icon(Icons.lock, size: 20, color: Colors.grey),
+                suffixIcon: const Icon(
+                  Icons.lock,
+                  size: 20,
+                  color: Colors.grey,
+                ),
               ),
               Row(
                 children: [
                   Expanded(
-                    child: CustomBookingFields.buildDatePickerField(
+                    child: CustomBookingFields.buildTextField(
                       context: context,
                       label: 'Expiry date (MM/YY)',
                       controller: _expiryController,
+                      keyboardType: TextInputType.datetime,
                       validator: _requiredValidator,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime(DateTime.now().year + 20),
-                      isExpiry: true,
+                      hintText: 'MM/YY',
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -250,10 +259,16 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
                 ],
               ),
               const SizedBox(height: 20),
-              Obx(() => _buildTotalRow(
-                'Total to pay', 
-                formatter.format(Get.find<FlightController>().currentGrandTotal > 0 ? Get.find<FlightController>().currentGrandTotal : _totalPrice)
-              )),
+              Obx(
+                () => _buildTotalRow(
+                  'Total to pay',
+                  formatter.format(
+                    Get.find<FlightController>().currentGrandTotal > 0
+                        ? Get.find<FlightController>().currentGrandTotal
+                        : _totalPrice,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -314,6 +329,7 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
@@ -322,12 +338,17 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
               fontSize: 13,
             ),
           ),
-          Text(
-            value,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -435,24 +456,39 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1565C0),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
+        child: Obx(() {
+          final isLoading = Get.find<FlightController>().isLoading.value;
+          return SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF1565C0),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(28),
+                ),
               ),
+              onPressed: isLoading ? null : _completeBooking,
+              child: isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : const Text(
+                      'Complete Booking',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
-            onPressed: _completeBooking,
-            child: const Text(
-              'Complete Booking',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
@@ -466,4 +502,3 @@ class _OneWaySecureBookingPageState extends State<OneWaySecureBookingPage> {
     return null;
   }
 }
-
