@@ -50,14 +50,15 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 24),
 
               // Logo area
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: accentColor.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
+              CircleAvatar(
+                radius: 40, // Half of 80
+                backgroundColor: accentColor.withValues(alpha: 0.12),
+                child: Image.asset(
+                  'assets/images/wellfly.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
-                child: Icon(Icons.flight, size: 40, color: accentColor),
               ),
               const SizedBox(height: 20),
 
@@ -70,13 +71,6 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(
-                'Sign in to continue',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: colors.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
 
               const SizedBox(height: 32),
 

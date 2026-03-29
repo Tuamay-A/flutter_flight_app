@@ -43,13 +43,12 @@ class _HomePageState extends State<HomePage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'WellFly',
-              style: TextStyle(
-                color: isDark ? Colors.white : Colors.black,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
+            SizedBox(
+              height: 40,
+              width: 120,
+              child: Image.asset(
+                'assets/images/wellfly.png',
+                fit: BoxFit.contain,
               ),
             ),
           ],
