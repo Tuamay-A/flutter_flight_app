@@ -1,25 +1,15 @@
 # ✈️ WellFly (Expedia-Inspired Flight App)
 
-A modern Flight Booking UI App built with Flutter, inspired by the Expedia mobile application.
-This project is being developed collaboratively by a team of three members as part of our learning and practical experience in cross-platform mobile development.
+WellFly is a modern flight booking mobile application built with Flutter, inspired by platforms like Expedia and other travel apps.
+It is developed as part of the UnlockGen Mentorship Program, focusing on real-world development and collaborative engineering practices.
 
 ## 📱 About The Project
 
-The Flight App aims to replicate the core UI experience of a flight booking platform like Expedia.
+WellFly is developed as an alternative to traditional flight booking applications like Expedia, with a focus on improving usability, interface design, and overall user experience.
 
-The current focus of the project includes:
+The application provides a complete flight booking flow, allowing users to search, select, and book flights through a clean, modern, and intuitive interface.
 
-- Flight search interface
-
-- Date selection UI
-
-- Flight listing screens
-
-- Clean and modern user interface
-
-- Responsive design for multiple platforms
-
-This project is mainly focused on frontend/UI development for now. API integration and backend connectivity may be added in future updates.
+Our goal is to address common usability challenges in existing travel apps by delivering a smoother and more user-friendly experience.
 
 
 ## 🚀 Built With
