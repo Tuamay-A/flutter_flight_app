@@ -56,9 +56,9 @@ We are focusing on:
 
 ## 🎯 Future Plans
 
-- Backend and API integration for real-time flight and stay data.
-- Booking confirmation workflows and payment integration.
-- Google authentication
+🔧 Enhancements and optimization of backend systems
+🌐 Advanced API improvements and scalability
+🧳 Expansion to additional travel services (hotels, packages, etc.)
 
 ## 📄 License
 
