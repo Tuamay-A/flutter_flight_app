@@ -62,8 +62,6 @@ We are focusing on:
 
 ## 📄 License
 
-## 📄 License
-
 This project is shared for **educational, learning, and portfolio purposes only**.  
 You are free to explore, study, and use the code for personal or learning projects.  
 Commercial use, redistribution, or claiming the project as your own is **not permitted**.
