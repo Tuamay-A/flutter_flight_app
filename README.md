@@ -56,9 +56,9 @@ We are focusing on:
 
 ## 🎯 Future Plans
 
-🔧 Enhancements and optimization of backend systems
-🌐 Advanced API improvements and scalability
-🧳 Expansion to additional travel services (hotels, packages, etc.)
+- Enhancements and optimization of backend systems
+- Advanced API improvements and scalability
+- Expansion to additional travel services (hotels, packages, etc.)
 
 ## 📄 License
 
